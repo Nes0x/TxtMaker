@@ -44,7 +44,7 @@ public class ButtonManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //tworzenie kolejnego okna
-                JFrame frame = TxtMaker.createFrame(600, 500, "Wybierz teksture " + name.toLowerCase(), JFrame.DISPOSE_ON_CLOSE, true);
+                JFrame frame = TxtMaker.createFrame(1200, 700, "Wybierz teksture " + name.toLowerCase(), JFrame.DISPOSE_ON_CLOSE, true);
 
                 //pobieranie wszystkich plików z danej kategorii
                 try (Stream<Path> paths = Files.walk(Paths.get("textures/" + folderName))) {
@@ -182,7 +182,7 @@ public class ButtonManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //stworzenie okna
-                JFrame frame = TxtMaker.createFrame(500, 500, "Wszystkie tekstury", JFrame.DISPOSE_ON_CLOSE, true);
+                JFrame frame = TxtMaker.createFrame(1200, 700, "Wszystkie tekstury", JFrame.DISPOSE_ON_CLOSE, true);
 
 
                 //sprawdzanie wszystkich tekstur użytkownika które ma wybrane i dodanie mouse listenera który usuwa tekstury
