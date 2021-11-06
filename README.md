@@ -1,4 +1,4 @@
 # TxtMaker 
 
 
-Projekt jest bardziej opisany na stronie https://txtmaker.cf
+Projekt jest opisany na stronie https://txtmaker.cf
