@@ -48,15 +48,16 @@ public class TxtMaker {
                 new ButtonManager("Wiadra", "buckets", "textures/items"),
                 new ButtonManager("Miecze", "swords", "textures/items"),
                 new ButtonManager("Itemy", "items", "textures/items"),
-                new ButtonManager("Sety", "armors", "models/armor")};
+                new ButtonManager("Sety", "armors", "models/armor"),
+                new ButtonManager("Gui", "guis", "textures/gui/container"),
+                new ButtonManager("Ikonki", "icons", "textures/gui"),
+        };
 
         Arrays.stream(buttonsTxT).forEach(button -> panels[1].add(button.getButton()));
         Arrays.stream(panels).forEach(panel -> panel.setLayout(new FlowLayout()));
 
         panels[0].add(ButtonManager.createTxtButton());
         panels[0].add(ButtonManager.createShowTextures());
-        panels[0].add(ButtonManager.createChangeName());
-
 
         main.add("Stwórz TXT", panels[0]);
         main.add("Dodaj tekstury", panels[1]);
