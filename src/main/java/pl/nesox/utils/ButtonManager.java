@@ -44,18 +44,18 @@ public class ButtonManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //tworzenie kolejnego okna
-                JFrame frame = TxtMaker.createFrame(1200, 700, "Wybierz teksture " + name.toLowerCase(), JFrame.DISPOSE_ON_CLOSE, true);
+                JFrame frame = TxtMaker.createFrame(1200, 900, "Wybierz teksture " + name.toLowerCase(), JFrame.DISPOSE_ON_CLOSE, true);
 
                 //pobieranie wszystkich plików z danej kategorii
-                try (Stream<Path> paths = Files.walk(Paths.get("textures/" + folderName))) {
+                try (Stream<Path> paths = Files.walk(Paths.get(".","textures", folderName))) {
                     paths.filter(Files::isRegularFile)
                             .forEach(file -> {
                                 //tworzenie labela
-                                JLabel label = new JLabel(file.toString().replace("9", "").substring(file.toString().lastIndexOf("\\")).replace("\\", "").replace(".png", ""));
+                                JLabel label = new JLabel(file.toFile().getName().replace("9", "").replace(".png", ""));
 
                                 Image image = null;
 
-                                File texture = new File(file + "");
+                                File texture = file.toFile();
 
                                 try {
                                     image = ImageIO.read(texture);
@@ -90,8 +90,7 @@ public class ButtonManager {
                                 //dodanie labela do okna + ustawienie do niego ikonki
                                 label.setHorizontalTextPosition(JLabel.CENTER);
                                 label.setVerticalTextPosition(JLabel.BOTTOM);
-                                label.setFont(new Font("Calibri", Font.PLAIN, 11));
-                                label.setIcon(new ImageIcon(image.getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
+                                label.setIcon(new ImageIcon(image.getScaledInstance(55, 55, Image.SCALE_SMOOTH)));
                                 frame.add(label);
                                     }
                             );
@@ -123,10 +122,11 @@ public class ButtonManager {
                 //dodawanie wszystkich tekstur do folderu na pulpicie
                 for (ButtonManager button : TxtMaker.getButtonsTxT()) {
                     if (!button.files.isEmpty()) {
+
                         isCreated = true;
-                        String userHomeFolder = System.getProperty("user.home");
+
                         try {
-                            FileUtils.copyDirectory(new File("TxtDefault"), new File(userHomeFolder + "\\Desktop\\" + nameOfTxt));
+                            FileUtils.copyDirectory(new File(String.valueOf(Paths.get(".", "TxtDefault"))), new File(String.valueOf(Paths.get(".", nameOfTxt))));
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }
@@ -134,18 +134,16 @@ public class ButtonManager {
                         int size = button.files.size() - 1;
 
                         for (int i = size; i >= 0; i--) {
-                            String subString = button.files.get(i).toString().substring(button.files.get(i).toString().lastIndexOf("\\"));
-
 
                             try {
-                                FileUtils.copyFileToDirectory(button.files.get(i), new File(userHomeFolder + "\\Desktop\\" + nameOfTxt + "\\assets\\minecraft", button.pathToTXTFolder));
+                                FileUtils.copyFileToDirectory(button.files.get(i), new File(String.valueOf(Paths.get(".", nameOfTxt, "assets", "minecraft", button.pathToTXTFolder))));
                             } catch (IOException ioException) {
                                 ioException.printStackTrace();
                             }
 
 
-                            File correctFile = new File(userHomeFolder + "/Desktop/" + nameOfTxt + "/assets/minecraft", button.pathToTXTFolder + "/" + subString.replace("9", ""));
-                            File wrongFile = new File(userHomeFolder + "/Desktop/" + nameOfTxt +"/assets/minecraft", button.pathToTXTFolder + "/" + subString);
+                            File correctFile = new File(String.valueOf(Paths.get(".", nameOfTxt, "assets", "minecraft", button.pathToTXTFolder)), button.files.get(i).getName().replace("9", ""));
+                            File wrongFile = new File(String.valueOf(Paths.get(".", nameOfTxt, "assets", "minecraft", button.pathToTXTFolder)), button.files.get(i).getName());
 
                             wrongFile.renameTo(correctFile);
 
@@ -154,7 +152,7 @@ public class ButtonManager {
                     }
                 }
 
-                String message = isCreated ? "Stworzono  teksturpacka na pulpicie." : "Błąd, nie udało się stworzyć teksturepacka.";
+                String message = isCreated ? "Stworzono teksturpacka w folderze programu." : "Błąd, nie udało się stworzyć teksturepacka. Musisz wybrać chociaż jedną teksturę.";
 
                 if (isCreated) {
                     TxtMaker.variables.putInt("valueOfCreatedTxT", TxtMaker.variables.getInt("valueOfCreatedTxT",0) + 1);
@@ -182,7 +180,7 @@ public class ButtonManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //stworzenie okna
-                JFrame frame = TxtMaker.createFrame(1200, 700, "Wszystkie tekstury", JFrame.DISPOSE_ON_CLOSE, true);
+                JFrame frame = TxtMaker.createFrame(1200, 900, "Wszystkie tekstury", JFrame.DISPOSE_ON_CLOSE, true);
 
 
                 //sprawdzanie wszystkich tekstur użytkownika które ma wybrane i dodanie mouse listenera który usuwa tekstury
@@ -190,22 +188,22 @@ public class ButtonManager {
                     int size = button.files.size() - 1;
 
                     for (int i = size; i >= 0; i--) {
-                        JLabel label = new JLabel(button.files.get(i).toString().replace("9", "").substring(button.files.get(i).toString().lastIndexOf("\\")).replace("\\", "").replace(".png", ""));
+                        JLabel label = new JLabel(button.files.get(i).getName().replace("9", "").replace(".png", ""));
 
                         Image image = null;
 
+                        File texture = button.files.get(i);
+
                         try {
-                            image = ImageIO.read(new File(button.files.get(i) + ""));
+                            image = ImageIO.read(texture);
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }
 
 
-                        int finalI = i;
                         label.addMouseListener(new MouseAdapter() {
                             @Override
                             public void mouseClicked(MouseEvent e) {
-                                File texture = new File(button.files.get(finalI) + "");
                                 if (button.files.contains(texture)) {
                                     button.files.remove(texture);
                                     JOptionPane.showMessageDialog(
@@ -221,77 +219,22 @@ public class ButtonManager {
 
 
                         //ustawienia okna + labela
-                        label.setFont(new Font("Calibri", Font.PLAIN, 11));
                         label.setHorizontalTextPosition(JLabel.CENTER);
                         label.setVerticalTextPosition(JLabel.BOTTOM);
-                        label.setIcon(new ImageIcon(image.getScaledInstance(35, 35, Image.SCALE_SMOOTH)));
+                        label.setIcon(new ImageIcon(image.getScaledInstance(55, 55, Image.SCALE_SMOOTH)));
                         frame.add(label);
-                        frame.setLayout(new FlowLayout());
-                        frame.setVisible(true);
 
                     }
 
 
                 }
+                frame.setLayout(new FlowLayout());
+                frame.setVisible(true);
             }
         });
 
 
         return showTextures;
-
-    }
-
-    //metoda która tworzy przycisk umożliwiający zmiane nazw plików
-    public static JButton createChangeName() {
-        JButton button = new JButton("Zmień nazwy plików");
-
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String valueOfNine =
-                        JOptionPane.showInputDialog(
-                                TxtMaker.getFrame(),
-                                "Podaj ilość dziewiątek",
-                                "1");
-
-                Integer valueOfNineInt = Integer.parseInt(valueOfNine);
-                StringBuilder nine = new StringBuilder();
-                for (int i = valueOfNineInt; i > 0; i--) {
-                    nine.append("9");
-                }
-
-                //zmienianie nazw plikow z folderu toChange w odpowiednia ilosc 9
-                try (Stream<Path> paths = Files.walk(Paths.get("textures/toChange"))) {
-                    paths.filter(Files::isRegularFile)
-                            .forEach(file -> {
-                                String fileChange = file.toString().substring(file.toString().lastIndexOf("\\")).replace("\\", "");
-                                File correctFile = new File(file.toString().substring(0, file.toString().lastIndexOf("\\")) + "\\" + nine + fileChange);
-                                File wrongFile = new File(file + "");
-
-
-                                wrongFile.renameTo(correctFile);
-
-                                }
-                            );
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-
-                JOptionPane.showMessageDialog(
-                        TxtMaker.getFrame(),
-                        "Zmieniono nazwy tekstur.",
-                        "Sukces!",
-                        JOptionPane.PLAIN_MESSAGE,
-                        null
-                );
-            }
-
-
-        });
-
-
-        return button;
-
 
     }
 
