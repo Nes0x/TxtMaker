@@ -48,7 +48,7 @@ public class TxtMaker {
                 new ButtonManager("Wiadra", "buckets", "textures/items"),
                 new ButtonManager("Miecze", "swords", "textures/items"),
                 new ButtonManager("Itemy", "items", "textures/items"),
-                new ButtonManager("Sety", "armors", "models/armor"),
+                new ButtonManager("Sety", "armors", "textures/models/armor"),
                 new ButtonManager("Gui", "guis", "textures/gui/container"),
                 new ButtonManager("Ikonki", "icons", "textures/gui"),
         };
