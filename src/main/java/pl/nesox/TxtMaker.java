@@ -4,11 +4,13 @@ import com.github.weisj.darklaf.LafManager;
 import com.github.weisj.darklaf.theme.OneDarkTheme;
 import pl.nesox.utils.ButtonManager;
 import pl.nesox.utils.DiscordIntegration;
+import pl.nesox.utils.Updater;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.prefs.Preferences;
 
@@ -32,8 +34,9 @@ public class TxtMaker {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         LafManager.install(new OneDarkTheme());
+        new Updater();
 
         //tworzenie okna, zakładek, przycisków
         frame = createFrame(600, 400, "TxtMaker", JFrame.EXIT_ON_CLOSE, false);
