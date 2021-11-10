@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.prefs.Preferences;
 
@@ -36,7 +38,7 @@ public class TxtMaker {
 
     public static void main(String[] args) throws IOException {
         LafManager.install(new OneDarkTheme());
-        new Updater();
+
 
         //tworzenie okna, zakładek, przycisków
         frame = createFrame(600, 400, "TxtMaker", JFrame.EXIT_ON_CLOSE, false);
@@ -72,12 +74,23 @@ public class TxtMaker {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
                 DiscordIntegration.stopRPC();
+                try {
+                    InputStream removeOnline = new URL("https://txtmaker.cf/api/remove-online").openStream();
+                    removeOnline.close();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+
             }
         });
 
 
         frame.add(main);
         frame.setVisible(true);
+
+        new Updater();
+        InputStream addOnline = new URL("https://txtmaker.cf/api/add-online").openStream();
+        addOnline.close();
 
 
         //aktywowanie statusu na discordzie
