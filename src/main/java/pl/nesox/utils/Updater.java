@@ -38,7 +38,7 @@ public class Updater {
     public Updater() throws IOException {
         JSONObject json = readJsonFromUrl("https://txtmaker.cf/api/actual-version");
 
-        if (!json.getString("actualVersion").equalsIgnoreCase("2.0.0")) {
+        if (!json.getString("actualVersion").equalsIgnoreCase("2.0.1")) {
             int result = JOptionPane.showConfirmDialog(
                     TxtMaker.getFrame(),
                     "Czy chcesz pobrać automatycznie do folderu nową wersje?",

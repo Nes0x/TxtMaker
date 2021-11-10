@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,9 +47,27 @@ public class ButtonManager {
                 //tworzenie kolejnego okna
                 JFrame frame = TxtMaker.createFrame(1200, 900, "Wybierz teksture " + name.toLowerCase(), JFrame.DISPOSE_ON_CLOSE, true);
 
-                //pobieranie wszystkich plików z danej kategorii
-                try (Stream<Path> paths = Files.walk(Paths.get(".","textures", folderName))) {
-                    paths.filter(Files::isRegularFile)
+
+
+                File allFilesFromFolderName = new File(String.valueOf(Paths.get(".","textures", folderName)));
+                String[] directories = allFilesFromFolderName.list(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File current, String name) {
+                        return new File(current, name).isDirectory();
+                    }
+                });
+
+                JTabbedPane main = new JTabbedPane();
+
+                for (String directory : directories) {
+                    JPanel panel = new JPanel();
+                    JButton addAllFiles = new JButton("Dodaj wszystkie tekstury");
+
+                    panel.add(addAllFiles);
+                    ArrayList<File> allFiles = new ArrayList<>();
+
+                    try (Stream<Path> paths = Files.walk(Paths.get(".","textures", folderName, directory))) {
+                        paths.filter(Files::isRegularFile)
                             .forEach(file -> {
                                 //tworzenie labela
                                 JLabel label = new JLabel(file.toFile().getName().replace("9", "").replace(".png", ""));
@@ -56,6 +75,9 @@ public class ButtonManager {
                                 Image image = null;
 
                                 File texture = file.toFile();
+
+                                allFiles.add(texture);
+
 
                                 try {
                                     image = ImageIO.read(texture);
@@ -65,9 +87,24 @@ public class ButtonManager {
 
 
                                 //dodanie do labela mouse listenera ktory dodaje itemy do txtpacka
+                                Image finalImage = image;
+
                                 label.addMouseListener(new MouseAdapter() {
                                     @Override
                                     public void mouseClicked(MouseEvent e) {
+                                        if (e.getButton() == MouseEvent.BUTTON3) {
+                                            JLabel labelAfterChange = new JLabel();
+                                            labelAfterChange.setIcon(new ImageIcon(finalImage.getScaledInstance(290, 290, Image.SCALE_SMOOTH)));
+                                            JOptionPane.showMessageDialog(
+                                                    frame,
+                                                    labelAfterChange,
+                                                    "Tekstura w powiększeniu!",
+                                                    JOptionPane.PLAIN_MESSAGE,
+                                                    null
+                                            );
+                                            return;
+                                        }
+
                                         String message;
 
                                         if (files.contains(texture)) {
@@ -91,15 +128,29 @@ public class ButtonManager {
                                 label.setHorizontalTextPosition(JLabel.CENTER);
                                 label.setVerticalTextPosition(JLabel.BOTTOM);
                                 label.setIcon(new ImageIcon(image.getScaledInstance(55, 55, Image.SCALE_SMOOTH)));
-                                frame.add(label);
+                                panel.add(label);
                                     }
                             );
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
+                    main.add(directory, panel);
+                    addAllFiles.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            files.addAll(allFiles);
+                            JOptionPane.showMessageDialog(
+                                    frame,
+                                    "Dodano wszystkie tekstury",
+                                    "Sukces!",
+                                    JOptionPane.PLAIN_MESSAGE,
+                                    null
+                            );
+                        }
+                    });
+                }
 
-                //wyswietlenie okna
-                frame.setLayout(new FlowLayout());
+                frame.add(main);
                 frame.setVisible(true);
             }
         });
@@ -181,6 +232,8 @@ public class ButtonManager {
             public void actionPerformed(ActionEvent e) {
                 //stworzenie okna
                 JFrame frame = TxtMaker.createFrame(1200, 900, "Wszystkie tekstury", JFrame.DISPOSE_ON_CLOSE, true);
+                JButton deleteAllFiles = new JButton("Usuń wszystkie tekstury");
+                ArrayList<File> allFiles = new ArrayList<>();
 
 
                 //sprawdzanie wszystkich tekstur użytkownika które ma wybrane i dodanie mouse listenera który usuwa tekstury
@@ -193,6 +246,8 @@ public class ButtonManager {
                         Image image = null;
 
                         File texture = button.files.get(i);
+
+                        allFiles.add(texture);
 
                         try {
                             image = ImageIO.read(texture);
@@ -225,9 +280,19 @@ public class ButtonManager {
                         frame.add(label);
 
                     }
-
+                    if (!button.files.isEmpty()) {
+                        deleteAllFiles.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                button.files.removeAll(allFiles);
+                            }
+                        });
+                    }
 
                 }
+
+
+                frame.add(deleteAllFiles);
                 frame.setLayout(new FlowLayout());
                 frame.setVisible(true);
             }
@@ -241,4 +306,6 @@ public class ButtonManager {
     public JButton getButton() {
         return button;
     }
+
+
 }
