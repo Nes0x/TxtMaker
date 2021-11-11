@@ -1,5 +1,7 @@
 package pl.nesox.utils;
 
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,22 +37,40 @@ public class Updater {
         }
     }
 
-    public Updater() throws IOException {
+    public Updater() throws IOException, ZipException {
         JSONObject json = readJsonFromUrl("https://txtmaker.cf/api/actual-version");
 
-        if (!json.getString("actualVersion").equalsIgnoreCase("2.0.1")) {
+        if (!json.getString("actualVersion").equalsIgnoreCase("2.0.3")) {
             int result = JOptionPane.showConfirmDialog(
                     TxtMaker.getFrame(),
-                    "Czy chcesz pobrać automatycznie do folderu nową wersje?",
-                    "Nowa wersja!",
+                    "Czy chcesz pobrać automatycznie nową wersje?",
+                    "Nowa wersja " + json.getString("actualVersion") + "!",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE
             );
 
             if (result == JOptionPane.YES_OPTION) {
-                File file = new File(String.valueOf(Paths.get(".", "txtmaker_" + json.getString("actualVersion") + ".zip")));
+                File zip = new File(String.valueOf(Paths.get(".", "txtmaker_" + json.getString("actualVersion") + ".zip")));
                 URL url = new URL("https://txtmaker.cf" + json.getString("actualVersionDownloadLink"));
-                FileUtils.copyURLToFile(url, file);
+                FileUtils.copyURLToFile(url, zip);
+                for (File filesInFolder : new File("./").listFiles()) {
+                    if (!filesInFolder.getPath().contains(".zip")) {
+                        filesInFolder.delete();
+                    }
+                }
+
+                ZipFile zipFile = new ZipFile(zip);
+                zipFile.extractAll("./");
+                zip.delete();
+
+                JOptionPane.showMessageDialog(
+                        TxtMaker.getFrame(),
+                        "Nowa wersja została pomyślnie zainstalowana.",
+                        "Sukces!",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+
+                System.exit(0);
             }
 
         }
