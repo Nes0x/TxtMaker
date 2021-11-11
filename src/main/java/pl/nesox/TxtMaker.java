@@ -113,7 +113,6 @@ public class TxtMaker {
         panels[3].add(enableDarkMode);
 
 
-
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
