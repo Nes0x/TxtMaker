@@ -51,26 +51,30 @@ public class Updater {
 
             if (result == JOptionPane.YES_OPTION) {
                 File zip = new File(String.valueOf(Paths.get(".", "txtmaker_" + json.getString("actualVersion") + ".zip")));
+                File folder = new File("./");
                 URL url = new URL("https://txtmaker.cf" + json.getString("actualVersionDownloadLink"));
-                FileUtils.copyURLToFile(url, zip);
-                for (File filesInFolder : new File("./").listFiles()) {
-                    if (!filesInFolder.getPath().contains(".zip")) {
-                        filesInFolder.delete();
-                    }
+
+                try {
+                    FileUtils.cleanDirectory(folder);
+                } finally {
+                    FileUtils.copyURLToFile(url, zip);
+
+                    ZipFile zipFile = new ZipFile(zip);
+                    zipFile.extractAll("./");
+                    zip.delete();
+
+                    JOptionPane.showMessageDialog(
+                            TxtMaker.getFrame(),
+                            "Nowa wersja została pomyślnie zainstalowana.",
+                            "Sukces!",
+                            JOptionPane.PLAIN_MESSAGE
+                    );
+
+                    System.exit(0);
                 }
 
-                ZipFile zipFile = new ZipFile(zip);
-                zipFile.extractAll("./");
-                zip.delete();
 
-                JOptionPane.showMessageDialog(
-                        TxtMaker.getFrame(),
-                        "Nowa wersja została pomyślnie zainstalowana.",
-                        "Sukces!",
-                        JOptionPane.PLAIN_MESSAGE
-                );
 
-                System.exit(0);
             }
 
         }
