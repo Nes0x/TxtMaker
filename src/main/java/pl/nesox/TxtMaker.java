@@ -79,9 +79,29 @@ public class TxtMaker {
         main.add("Pomoc", panels[3]);
 
         JCheckBox enableDarkMode = new JCheckBox("Tryb ciemny");
+        JCheckBox enableAutoUpdate = new JCheckBox("Auto aktualizacje");
+
         if (variables.getBoolean("darkMode", true)) {
             enableDarkMode.setSelected(true);
         }
+
+        if (variables.getBoolean("autoUpdate", true)) {
+            enableAutoUpdate.setSelected(true);
+        }
+
+        enableAutoUpdate.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                switch (e.getStateChange()) {
+                    case ItemEvent.SELECTED:
+                        variables.putBoolean("autoUpdate", true);
+                        break;
+                    case ItemEvent.DESELECTED:
+                        variables.putBoolean("autoUpdate", false);
+                        break;
+                }
+            }
+        });
 
         enableDarkMode.addItemListener(new ItemListener() {
             @Override
@@ -100,7 +120,7 @@ public class TxtMaker {
         });
 
         JTextArea changelog = new JTextArea();
-        changelog.setText("+ Automatyczne aktualizacje \n+ Zakładka zmiany \n+ Wybór motywu");
+        changelog.setText("+ Możliwość wyłączenia automatycznych aktualizacji");
         changelog.setEditable(false);
         JScrollPane changelogPane = new JScrollPane(changelog);
 
@@ -111,6 +131,7 @@ public class TxtMaker {
 
         panels[3].add(new JScrollPane(help));
         panels[3].add(enableDarkMode);
+        panels[3].add(enableAutoUpdate);
 
 
         frame.addWindowListener(new WindowAdapter() {
@@ -127,7 +148,10 @@ public class TxtMaker {
 
 
         //Sprawdzanie aktualizacji
-        new Updater();
+        if (variables.getBoolean("autoUpdate", true)) {
+            new Updater();
+        }
+
 
 
         //aktywowanie statusu na discordzie
