@@ -3,8 +3,8 @@ package pl.nesox;
 import com.github.weisj.darklaf.LafManager;
 import com.github.weisj.darklaf.theme.HighContrastLightTheme;
 import com.github.weisj.darklaf.theme.OneDarkTheme;
-import com.github.weisj.darklaf.theme.SolarizedLightTheme;
 import net.lingala.zip4j.exception.ZipException;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import pl.nesox.utils.ButtonManager;
 import pl.nesox.utils.DiscordIntegration;
 import pl.nesox.utils.Updater;
@@ -39,7 +39,7 @@ public class TxtMaker {
     }
 
 
-    public static void main(String[] args) throws IOException, ZipException {
+    public static void main(String[] args) throws IOException, ZipException, XmlPullParserException {
         if (variables.getBoolean("darkMode", true)) {
             LafManager.install(new OneDarkTheme());
         } else {
@@ -79,25 +79,25 @@ public class TxtMaker {
         main.add("Pomoc", panels[3]);
 
         JCheckBox enableDarkMode = new JCheckBox("Tryb ciemny");
-        JCheckBox enableAutoUpdate = new JCheckBox("Auto aktualizacje");
+        JCheckBox enableTelemetry = new JCheckBox("Telemetria(Auto aktualizacje, wiadomość w pomoc)");
 
         if (variables.getBoolean("darkMode", true)) {
             enableDarkMode.setSelected(true);
         }
 
-        if (variables.getBoolean("autoUpdate", true)) {
-            enableAutoUpdate.setSelected(true);
+        if (variables.getBoolean("telemetry", true)) {
+            enableTelemetry.setSelected(true);
         }
 
-        enableAutoUpdate.addItemListener(new ItemListener() {
+        enableTelemetry.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 switch (e.getStateChange()) {
                     case ItemEvent.SELECTED:
-                        variables.putBoolean("autoUpdate", true);
+                        variables.putBoolean("telemetry", true);
                         break;
                     case ItemEvent.DESELECTED:
-                        variables.putBoolean("autoUpdate", false);
+                        variables.putBoolean("telemetry", false);
                         break;
                 }
             }
@@ -120,18 +120,25 @@ public class TxtMaker {
         });
 
         JTextArea changelog = new JTextArea();
-        changelog.setText("+ Możliwość wyłączenia automatycznych aktualizacji");
+        changelog.setText("+ Dodanie możliwości zmiany danych w zakładce pomoc poprzez API strony \n+ Dodano możliwość wyłączenia telemetrii");
         changelog.setEditable(false);
         JScrollPane changelogPane = new JScrollPane(changelog);
 
         panels[2].add(changelogPane);
 
-        JTextArea help = new JTextArea("Jeśli potrzebujesz pomocy wejdz na discorda: \nhttps://discord.gg/ZwKVn2XbWc");
+        JTextArea help = new JTextArea();
+
+        if (variables.getBoolean("telemetry", true)) {
+            help.setText(Updater.readJsonFromUrl("https://txtmaker.cf/api/message").getString("message"));
+        } else {
+            help.setText("Jeśli potrzebujesz pomocy wejdź na discorda: https://discord.gg/ZYzHhhaPVu");
+        }
+
         help.setEditable(false);
 
         panels[3].add(new JScrollPane(help));
         panels[3].add(enableDarkMode);
-        panels[3].add(enableAutoUpdate);
+        panels[3].add(enableTelemetry);
 
 
         frame.addWindowListener(new WindowAdapter() {
@@ -148,7 +155,7 @@ public class TxtMaker {
 
 
         //Sprawdzanie aktualizacji
-        if (variables.getBoolean("autoUpdate", true)) {
+        if (variables.getBoolean("telemetry", true)) {
             new Updater();
         }
 
