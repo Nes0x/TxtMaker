@@ -3,6 +3,9 @@ package pl.nesox.utils;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import pl.nesox.TxtMaker;
@@ -16,7 +19,7 @@ import java.nio.file.Paths;
 public class Updater {
 
 
-    private String readAll(Reader rd) throws IOException {
+    private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;
         while ((cp = rd.read()) != -1) {
@@ -25,7 +28,7 @@ public class Updater {
         return sb.toString();
     }
 
-    public JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
         InputStream is = new URL(url).openStream();
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
@@ -37,10 +40,18 @@ public class Updater {
         }
     }
 
-    public Updater() throws IOException, ZipException {
+    public Updater() throws IOException, ZipException, XmlPullParserException {
         JSONObject json = readJsonFromUrl("https://txtmaker.cf/api/actual-version");
 
-        if (!json.getString("actualVersion").equalsIgnoreCase("2.0.3")) {
+        MavenXpp3Reader mavenXpp3Reader = new MavenXpp3Reader();
+        Model model;
+
+        model = mavenXpp3Reader.read(new
+                InputStreamReader(TxtMaker.class.getResourceAsStream(
+                "/META-INF/maven/pl.nesox/TxtMaker/pom.xml")));
+
+
+        if (!json.getString("actualVersion").equalsIgnoreCase(model.getVersion())) {
             int result = JOptionPane.showConfirmDialog(
                     TxtMaker.getFrame(),
                     "Czy chcesz pobrać automatycznie nową wersje?",
