@@ -21,7 +21,9 @@ import java.util.prefs.Preferences;
 
 public class TxtMaker {
     private static JFrame frame;
+    private static final String VERSIONS[] = {"1.8", "1.16"};
     private static ButtonManager[] buttonsTxT;
+    private static JComboBox<String> version;
     public static Preferences variables = Preferences.userNodeForPackage(TxtMaker.class);
 
     public static JFrame createFrame(int width, int high, String title, int action, boolean resizable) {
@@ -70,13 +72,20 @@ public class TxtMaker {
         Arrays.stream(buttonsTxT).forEach(button -> panels[1].add(button.getButton()));
         Arrays.stream(panels).forEach(panel -> panel.setLayout(new FlowLayout()));
 
+
+        version = new JComboBox<>(VERSIONS);
+
         panels[0].add(ButtonManager.createTxtButton());
         panels[0].add(ButtonManager.createShowTextures());
+        panels[0].add(version);
 
         main.add("Stwórz TXT", panels[0]);
         main.add("Dodaj tekstury", panels[1]);
         main.add("Zmiany", panels[2]);
         main.add("Pomoc", panels[3]);
+
+
+
 
         JCheckBox enableDarkMode = new JCheckBox("Tryb ciemny");
         JCheckBox enableTelemetry = new JCheckBox("Telemetria(Auto aktualizacje, wiadomość w pomoc)");
@@ -120,8 +129,9 @@ public class TxtMaker {
         });
 
         JTextArea changelog = new JTextArea();
-        changelog.setText("+ Dodanie możliwości zmiany danych w zakładce pomoc poprzez API strony \n+ Dodano możliwość wyłączenia telemetrii");
+        changelog.setText("+ Dodano możliwość wyboru wersji gry");
         changelog.setEditable(false);
+
         JScrollPane changelogPane = new JScrollPane(changelog);
 
         panels[2].add(changelogPane);
@@ -166,11 +176,19 @@ public class TxtMaker {
 
     }
 
+    public static String[] getVERSIONS() {
+        return VERSIONS;
+    }
+
     public static JFrame getFrame() {
         return frame;
     }
 
     public static ButtonManager[] getButtonsTxT() {
         return buttonsTxT;
+    }
+
+    public static JComboBox<String> getVersion() {
+        return version;
     }
 }
