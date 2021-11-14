@@ -49,7 +49,7 @@ public class ButtonManager {
 
 
 
-                File allFilesFromFolderName = new File(String.valueOf(Paths.get(".","textures", folderName)));
+                File allFilesFromFolderName = new File(String.valueOf(Paths.get(".","textures" + TxtMaker.getVERSIONS()[TxtMaker.getVersion().getSelectedIndex()], folderName)));
                 String[] directories = allFilesFromFolderName.list(new FilenameFilter() {
                     @Override
                     public boolean accept(File current, String name) {
@@ -66,7 +66,7 @@ public class ButtonManager {
                     panel.add(addAllFiles);
                     ArrayList<File> allFiles = new ArrayList<>();
 
-                    try (Stream<Path> paths = Files.walk(Paths.get(".","textures", folderName, directory))) {
+                    try (Stream<Path> paths = Files.walk(Paths.get(".","textures" + TxtMaker.getVERSIONS()[TxtMaker.getVersion().getSelectedIndex()], folderName, directory))) {
                         paths.filter(Files::isRegularFile)
                             .forEach(file -> {
                                 //tworzenie labela
