@@ -177,7 +177,7 @@ public class ButtonManager {
                         isCreated = true;
 
                         try {
-                            FileUtils.copyDirectory(new File(String.valueOf(Paths.get(".", "TxtDefault"))), new File(String.valueOf(Paths.get(".", nameOfTxt))));
+                            FileUtils.copyDirectory(new File(String.valueOf(Paths.get(".", "TxtDefault" + TxtMaker.getVERSIONS()[TxtMaker.getVersion().getSelectedIndex()]))), new File(String.valueOf(Paths.get(".", nameOfTxt))));
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }
@@ -307,5 +307,11 @@ public class ButtonManager {
         return button;
     }
 
+    public void setPathToTXTFolder(String pathToTXTFolder) {
+        this.pathToTXTFolder = pathToTXTFolder;
+    }
 
+    public String getPathToTXTFolder() {
+        return pathToTXTFolder;
+    }
 }
