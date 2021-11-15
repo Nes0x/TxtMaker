@@ -5,18 +5,17 @@ import com.github.weisj.darklaf.theme.HighContrastLightTheme;
 import com.github.weisj.darklaf.theme.OneDarkTheme;
 import net.lingala.zip4j.exception.ZipException;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.json.JSONObject;
 import pl.nesox.utils.ButtonManager;
 import pl.nesox.utils.DiscordIntegration;
 import pl.nesox.utils.Updater;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 
 public class TxtMaker {
@@ -74,6 +73,28 @@ public class TxtMaker {
 
 
         version = new JComboBox<>(VERSIONS);
+
+        version.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (ButtonManager button : buttonsTxT) {
+                    if (version.getSelectedIndex() == 1) {
+                        if (button.getPathToTXTFolder().contains("items")) {
+                            button.setPathToTXTFolder(button.getPathToTXTFolder().replace("items", "item"));
+                        } else if (button.getPathToTXTFolder().contains("blocks")) {
+                            button.setPathToTXTFolder(button.getPathToTXTFolder().replace("blocks", "block"));
+                        }
+                    } else {
+                        if (button.getPathToTXTFolder().contains("item")) {
+                            button.setPathToTXTFolder(button.getPathToTXTFolder().replace("item", "items"));
+                        } else if (button.getPathToTXTFolder().contains("block")) {
+                            button.setPathToTXTFolder(button.getPathToTXTFolder().replace("block", "blocks"));
+                        }
+                    }
+
+                }
+            }
+        });
 
         panels[0].add(ButtonManager.createTxtButton());
         panels[0].add(ButtonManager.createShowTextures());
@@ -139,7 +160,12 @@ public class TxtMaker {
         JTextArea help = new JTextArea();
 
         if (variables.getBoolean("telemetry", true)) {
-            help.setText(Updater.readJsonFromUrl("https://txtmaker.cf/api/message").getString("message"));
+            JSONObject json = Updater.readJsonFromUrl("https://txtmaker.cf/api/message");
+            if (json != null) {
+                help.setText(json.getString("message"));
+            } else {
+                help.setText("Jeśli potrzebujesz pomocy wejdź na discorda: https://discord.gg/ZYzHhhaPVu");
+            }
         } else {
             help.setText("Jeśli potrzebujesz pomocy wejdź na discorda: https://discord.gg/ZYzHhhaPVu");
         }
