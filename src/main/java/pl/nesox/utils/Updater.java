@@ -1,5 +1,6 @@
 package pl.nesox.utils;
 
+import mslinks.ShellLink;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
@@ -74,27 +75,35 @@ public class Updater {
                 );
 
                 if (result == JOptionPane.YES_OPTION) {
-                    File zip = new File(String.valueOf(Paths.get(".", "txtmaker_" + json.getString("actualVersion") + ".zip")));
-                    File folder = new File("./");
+
+                    File txtMaker = new File(String.valueOf(Paths.get(TxtMaker.variables.get("txtMakerPath", "./"), "TxtMaker" + json.getString("actualVersion"))));
+                    File zip = new File(String.valueOf(Paths.get(TxtMaker.variables.get("txtMakerPath", "./"), "TxtMaker" + json.getString("actualVersion"), "txtmaker_" + json.getString("actualVersion") + ".zip")));
                     URL url = new URL("https://txtmaker.cf" + json.getString("actualVersionDownloadLink"));
 
-                    try {
-                        FileUtils.cleanDirectory(folder);
-                    } finally {
-                        FileUtils.copyURLToFile(url, zip);
+                    txtMaker.mkdir();
 
-                        ZipFile zipFile = new ZipFile(zip);
-                        zipFile.extractAll("./");
-                        zip.delete();
 
-                        JOptionPane.showMessageDialog(
-                                TxtMaker.getFrame(),
-                                "Nowa wersja została pomyślnie zainstalowana.",
-                                "Sukces!",
-                                JOptionPane.PLAIN_MESSAGE
-                        );
+                    FileUtils.copyURLToFile(url, zip);
 
-                        System.exit(0);
+                    ZipFile zipFile = new ZipFile(zip);
+                    zipFile.extractAll(String.valueOf(Paths.get(TxtMaker.variables.get("txtMakerPath", "./"), "TxtMaker" + json.getString("actualVersion"))));
+                    zip.delete();
+
+                    if (System.getProperty("os.name").contains("Windows")) {
+                        ShellLink.createLink(Paths.get(TxtMaker.variables.get("txtMakerPath", "./"), "TxtMaker" + json.getString("actualVersion")) + "/TxtMaker.jar", TxtMaker.variables.get("txtMakerShortcutPath", "./") + "/TxtMaker" + json.getString("actualVersion") + ".lnk");
+
+                    }
+
+
+
+
+                    JOptionPane.showMessageDialog(
+                            TxtMaker.getFrame(),
+                            "Nowa wersja została pomyślnie zainstalowana.",
+                            "Sukces!",
+                            JOptionPane.PLAIN_MESSAGE
+                    );
+
                     }
 
 
@@ -106,4 +115,4 @@ public class Updater {
 
     }
 
-}
+
