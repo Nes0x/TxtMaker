@@ -6,6 +6,10 @@ import pl.nesox.TxtMaker;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -17,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class ButtonManager {
@@ -47,8 +52,6 @@ public class ButtonManager {
                 //tworzenie kolejnego okna
                 JFrame frame = TxtMaker.createFrame(1200, 900, "Wybierz teksture " + name.toLowerCase(), JFrame.DISPOSE_ON_CLOSE, true);
 
-
-
                 File allFilesFromFolderName = new File(String.valueOf(Paths.get(".","textures" + TxtMaker.getVERSIONS()[TxtMaker.getVersion().getSelectedIndex()], folderName)));
                 String[] directories = allFilesFromFolderName.list(new FilenameFilter() {
                     @Override
@@ -61,10 +64,34 @@ public class ButtonManager {
 
                 for (String directory : directories) {
                     JPanel panel = new JPanel();
-                    JButton addAllFiles = new JButton("Dodaj wszystkie tekstury");
 
-                    panel.add(addAllFiles);
                     ArrayList<File> allFiles = new ArrayList<>();
+
+
+                    panel.setDropTarget(new DropTarget() {
+                        public synchronized void drop(DropTargetDropEvent evt) {
+                            try {
+                                evt.acceptDrop(DnDConstants.ACTION_COPY);
+                                List<File> droppedFiles = (List<File>)
+                                        evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                                for (File droppedFile : droppedFiles) {
+                                    if (droppedFile.getName().contains(".png")) {
+                                        FileUtils.copyFileToDirectory(droppedFile, Paths.get(".","textures" + TxtMaker.getVERSIONS()[TxtMaker.getVersion().getSelectedIndex()], folderName, directory).toFile());
+                                    }
+                                }
+
+                                JOptionPane.showMessageDialog(
+                                        frame,
+                                        "Dodano tekstury! Włącz od nowa kategorie aby je zobaczyć!",
+                                        "Sukces!",
+                                        JOptionPane.PLAIN_MESSAGE,
+                                        null
+                                );
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    });
 
                     try (Stream<Path> paths = Files.walk(Paths.get(".","textures" + TxtMaker.getVERSIONS()[TxtMaker.getVersion().getSelectedIndex()], folderName, directory))) {
                         paths.filter(Files::isRegularFile)
@@ -116,7 +143,7 @@ public class ButtonManager {
                                         }
 
                                         JOptionPane.showMessageDialog(
-                                                frame,
+                                                panel,
                                                 message,
                                                 "Sukces!",
                                                 JOptionPane.PLAIN_MESSAGE,
@@ -135,19 +162,6 @@ public class ButtonManager {
                     ioException.printStackTrace();
                 }
                     main.add(directory, panel);
-                    addAllFiles.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            files.addAll(allFiles);
-                            JOptionPane.showMessageDialog(
-                                    frame,
-                                    "Dodano wszystkie tekstury",
-                                    "Sukces!",
-                                    JOptionPane.PLAIN_MESSAGE,
-                                    null
-                            );
-                        }
-                    });
                 }
 
                 frame.add(main);

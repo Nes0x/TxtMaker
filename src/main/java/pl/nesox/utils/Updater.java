@@ -95,8 +95,6 @@ public class Updater {
                     }
 
 
-
-
                     JOptionPane.showMessageDialog(
                             TxtMaker.getFrame(),
                             "Nowa wersja została pomyślnie zainstalowana.",
