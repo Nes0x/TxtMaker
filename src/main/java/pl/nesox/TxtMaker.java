@@ -15,7 +15,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.prefs.Preferences;
 
 public class TxtMaker {
@@ -24,6 +23,7 @@ public class TxtMaker {
     private static ButtonManager[] buttonsTxT;
     private static JComboBox<String> version;
     public static Preferences variables = Preferences.userNodeForPackage(TxtMaker.class);
+
 
     public static JFrame createFrame(int width, int high, String title, int action, boolean resizable) {
         JFrame frame = new JFrame(title);
@@ -41,12 +41,15 @@ public class TxtMaker {
 
 
     public static void main(String[] args) throws IOException, ZipException, XmlPullParserException {
+        UIManager.put("OptionPane.yesButtonText", "Tak");
+        UIManager.put("OptionPane.noButtonText", "Nie");
+
+
         if (variables.getBoolean("darkMode", true)) {
             LafManager.install(new OneDarkTheme());
         } else {
             LafManager.install(new HighContrastLightTheme());
         }
-
 
 
         //tworzenie okna, zakładek, przycisków
@@ -150,7 +153,7 @@ public class TxtMaker {
         });
 
         JTextArea changelog = new JTextArea();
-        changelog.setText("+ Dodano możliwość wyboru wersji gry");
+        changelog.setText("+ Dodano możliwość dodania swoich tekstur za pomocą drag & drop \n - Usunięto przycisk dodaj wszystkie tekstury(był mało użyteczny)");
         changelog.setEditable(false);
 
         JScrollPane changelogPane = new JScrollPane(changelog);
