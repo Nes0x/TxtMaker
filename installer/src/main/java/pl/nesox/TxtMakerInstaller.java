@@ -125,6 +125,9 @@ public class TxtMakerInstaller {
                                 }
 
 
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            } finally {
 
                                 JOptionPane.showMessageDialog(
                                         null,
@@ -138,11 +141,6 @@ public class TxtMakerInstaller {
                                 panels[0].remove(successDownload);
                                 panels[0].repaint();
                                 panels[0].revalidate();
-
-
-
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
                             }
                         }
                     });
