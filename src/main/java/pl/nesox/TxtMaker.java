@@ -57,7 +57,7 @@ public class TxtMaker {
 
         JTabbedPane main = new JTabbedPane();
 
-        JPanel[] panels = new JPanel[]{new JPanel(), new JPanel(), new JPanel(), new JPanel()};
+        JPanel[] panels = new JPanel[]{new JPanel(), new JPanel(), new JPanel(), new JPanel(), new JPanel()};
         buttonsTxT = new ButtonManager[]{
                 new ButtonManager("Jabłka", "apples", "textures/items"),
                 new ButtonManager("Bloki", "blocks", "textures/blocks"),
@@ -106,13 +106,14 @@ public class TxtMaker {
         main.add("Stwórz TXT", panels[0]);
         main.add("Dodaj tekstury", panels[1]);
         main.add("Zmiany", panels[2]);
-        main.add("Pomoc", panels[3]);
+        main.add("Ustawienia", panels[3]);
+        main.add("Pomoc", panels[4]);
 
 
 
 
         JCheckBox enableDarkMode = new JCheckBox("Tryb ciemny");
-        JCheckBox enableTelemetry = new JCheckBox("Telemetria(Auto aktualizacje, wiadomość w pomoc)");
+        JCheckBox enableTelemetry = new JCheckBox("Telemetria(Auto aktualizacje, wiadomość w zakładce pomoc)");
 
         if (variables.getBoolean("darkMode", true)) {
             enableDarkMode.setSelected(true);
@@ -153,7 +154,7 @@ public class TxtMaker {
         });
 
         JTextArea changelog = new JTextArea();
-        changelog.setText("+ Dodano możliwość dodania swoich tekstur za pomocą drag & drop \n - Usunięto przycisk dodaj wszystkie tekstury(był mało użyteczny)");
+        changelog.setText("+ Dodano możliwość wybrania gdzie ma się tworzyć txtpack (Zakładka ustawienia). \nDomyślnie tworzy się w folderze programu");
         changelog.setEditable(false);
 
         JScrollPane changelogPane = new JScrollPane(changelog);
@@ -175,10 +176,13 @@ public class TxtMaker {
 
         help.setEditable(false);
 
-        panels[3].add(new JScrollPane(help));
+        panels[4].add(new JScrollPane(help));
+
         panels[3].add(enableDarkMode);
         panels[3].add(enableTelemetry);
-
+        panels[3].add(ButtonManager.createChooseTxtPath());
+        panels[3].add(ButtonManager.resetTxtPath());
+        panels[3].add(new JLabel("./ = Folder programu"));
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
