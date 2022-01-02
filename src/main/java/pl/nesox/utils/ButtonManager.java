@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 public class ButtonManager {
     //deklarowanie zmiennych
+    private static JButton chooseTxtPath;
     private JButton button;
     private String name, folderName, pathToTXTFolder;
     private ArrayList<File> files;
@@ -191,7 +192,7 @@ public class ButtonManager {
                         isCreated = true;
 
                         try {
-                            FileUtils.copyDirectory(new File(String.valueOf(Paths.get(".", "TxtDefault" + TxtMaker.getVERSIONS()[TxtMaker.getVersion().getSelectedIndex()]))), new File(String.valueOf(Paths.get(".", nameOfTxt))));
+                            FileUtils.copyDirectory(new File(String.valueOf(Paths.get(".", "TxtDefault" + TxtMaker.getVERSIONS()[TxtMaker.getVersion().getSelectedIndex()]))), new File(String.valueOf(Paths.get(TxtMaker.variables.get("txtCreationFolder", "./"), nameOfTxt))));
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }
@@ -201,14 +202,14 @@ public class ButtonManager {
                         for (int i = size; i >= 0; i--) {
 
                             try {
-                                FileUtils.copyFileToDirectory(button.files.get(i), new File(String.valueOf(Paths.get(".", nameOfTxt, "assets", "minecraft", button.pathToTXTFolder))));
+                                FileUtils.copyFileToDirectory(button.files.get(i), new File(String.valueOf(Paths.get(TxtMaker.variables.get("txtCreationFolder", "./"), nameOfTxt, "assets", "minecraft", button.pathToTXTFolder))));
                             } catch (IOException ioException) {
                                 ioException.printStackTrace();
                             }
 
 
-                            File correctFile = new File(String.valueOf(Paths.get(".", nameOfTxt, "assets", "minecraft", button.pathToTXTFolder)), button.files.get(i).getName().replace("9", ""));
-                            File wrongFile = new File(String.valueOf(Paths.get(".", nameOfTxt, "assets", "minecraft", button.pathToTXTFolder)), button.files.get(i).getName());
+                            File correctFile = new File(String.valueOf(Paths.get(TxtMaker.variables.get("txtCreationFolder", "./"), nameOfTxt, "assets", "minecraft", button.pathToTXTFolder)), button.files.get(i).getName().replace("9", ""));
+                            File wrongFile = new File(String.valueOf(Paths.get(TxtMaker.variables.get("txtCreationFolder", "./"), nameOfTxt, "assets", "minecraft", button.pathToTXTFolder)), button.files.get(i).getName());
 
                             wrongFile.renameTo(correctFile);
 
@@ -217,7 +218,14 @@ public class ButtonManager {
                     }
                 }
 
-                String message = isCreated ? "Stworzono teksturpacka w folderze programu." : "Błąd, nie udało się stworzyć teksturepacka. Musisz wybrać chociaż jedną teksturę.";
+                String message;
+
+                if (TxtMaker.variables.get("txtCreationFolder", "./").equalsIgnoreCase("./")) {
+                    message = isCreated ? "Stworzono teksturpacka w folderze programu." : "Błąd, nie udało się stworzyć teksturepacka. Musisz wybrać chociaż jedną teksturę.";
+                } else {
+                    message = isCreated ? "Stworzono teksturpacka w " + TxtMaker.variables.get("txtCreationFolder", "./") : "Błąd, nie udało się stworzyć teksturepacka. Musisz wybrać chociaż jedną teksturę.";
+                }
+
 
                 if (isCreated) {
                     TxtMaker.variables.putInt("valueOfCreatedTxT", TxtMaker.variables.getInt("valueOfCreatedTxT",0) + 1);
@@ -316,6 +324,43 @@ public class ButtonManager {
         return showTextures;
 
     }
+
+
+    public static JButton createChooseTxtPath() {
+        chooseTxtPath = new JButton("Wybierz scieżke stworzenia txtpacka. \nAktualnie: " + TxtMaker.variables.get("txtCreationFolder", "./"));
+
+        chooseTxtPath.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int result = fileChooser.showOpenDialog(TxtMaker.getFrame());
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    TxtMaker.variables.put("txtCreationFolder", file.getAbsolutePath());
+                    chooseTxtPath.setText("Wybierz scieżke stworzenia txtpacka. \nAktualnie: " + TxtMaker.variables.get("txtCreationFolder", "./"));
+
+                }
+            }
+        });
+        return chooseTxtPath;
+    }
+
+
+    public static JButton resetTxtPath() {
+        JButton resetPath = new JButton("Zresetuj scieżke stworzenia txtpacka");
+
+        resetPath.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TxtMaker.variables.put("txtCreationFolder", "./");
+                chooseTxtPath.setText("Wybierz scieżke stworzenia txtpacka. \nAktualnie: " + TxtMaker.variables.get("txtCreationFolder", "./"));
+
+            }
+        });
+        return resetPath;
+    }
+
 
     public JButton getButton() {
         return button;
